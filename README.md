@@ -2,9 +2,12 @@
 
 **Быстрый учёт личных трат: статья, сумма, одно нажатие.** Android-приложение, которое работает офлайн, без регистрации и без сервера — все данные остаются на устройстве.
 
+![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-5-646CFF?logo=vite&logoColor=white)
+![Capacitor](https://img.shields.io/badge/Capacitor-7-119EFF?logo=capacitor&logoColor=white)
+![PWA](https://img.shields.io/badge/PWA-ready-5A0FC8?logo=pwa&logoColor=white)
 ![Android](https://img.shields.io/badge/Android-6.0%2B-3DDC84?logo=android&logoColor=white)
-![Офлайн](https://img.shields.io/badge/офлайн-да-4CAF50)
-![Без регистрации](https://img.shields.io/badge/аккаунт-не%20нужен-4CAF50)
 
 ## ⬇️ Скачать
 
@@ -53,6 +56,15 @@
 
 Дополнительно: валидация суммы (запятая и точка, копейки, лимит), защита от двойного сохранения, запрет будущих дат, `safe-area` для вырезов экрана, доступные тач-зоны и подписи.
 
+## Технологии
+
+- **UI:** React 18, TypeScript, CSS-переменные без UI-библиотек
+- **Сборка:** Vite 5, PWA через `vite-plugin-pwa`
+- **Данные:** IndexedDB (`idb`), настройки в `localStorage`
+- **Даты и деньги:** `date-fns`, суммы хранятся в копейках (целые числа)
+- **Android:** Capacitor 7, подписанный release-APK
+- **Иконки:** Material Symbols (Apache 2.0), рендер через `sharp`
+
 ## Установка
 
 1. Скачайте APK на телефон и откройте его из «Загрузок» (или из чата, куда скачали).
@@ -61,10 +73,67 @@
 
 Обновления ставятся поверх: у всех версий один и тот же ключ подписи, данные сохраняются.
 
+## Структура репозитория
+
+```
+app/                     исходники приложения
+  src/
+    screens/             Home, Expenses, Report, Settings
+    components/          кольцо месяца, шторки, диалоги, тосты, редактор записи, комментарий
+    db.ts                схема IndexedDB и операции
+    store.tsx            состояние приложения и действия
+    lib/                 деньги, даты, периоды, склонения
+  android/               нативный проект Capacitor
+  public/                иконки и favicon
+  scripts/               генерация иконок и splash-экранов
+docs/screenshots/        скриншоты для README
+```
+
+## Запуск (веб-версия)
+
+```bash
+cd app
+pnpm install
+pnpm dev        # http://127.0.0.1:5178
+```
+
+Проверка и сборка:
+
+```bash
+pnpm test       # юнит-тесты сумм и периодов (vitest)
+pnpm build      # tsc + vite build → dist/
+pnpm preview    # предпросмотр собранной версии
+```
+
+## Сборка APK
+
+```bash
+cd app
+pnpm build
+npx cap sync android
+cd android
+./gradlew assembleRelease   # Windows: gradlew.bat assembleRelease
+# → app/build/outputs/apk/release/app-release.apk
+```
+
+Для подписанной сборки рядом с `app/android/build.gradle` нужен файл `keystore.properties`:
+
+```properties
+storeFile=keystore/your-key.jks
+keyAlias=your-alias
+storePassword=********
+keyPassword=********
+```
+
+и сам ключ в `app/android/keystore/`. Оба пути перечислены в `.gitignore` — в репозиторий ключ не попадает и не должен. Без этого файла соберётся неподписанный APK.
+
+**Ключ подписи нужно хранить отдельно и не терять:** обновление установится поверх старой версии только с тем же ключом. Если ключ потерян, пользователям придётся удалить приложение вместе с данными.
+
 ## Данные и приватность
 
 - Нет сервера, аккаунтов, аналитики и трекеров — приложение не делает сетевых запросов.
-- Данные живут на устройстве до удаления приложения.
+- Веб-версия и APK хранят данные независимо (разные origins). Перенос — через экспорт JSON в настройках.
+- Очистка кэша браузера удаляет записи: перед этим сделайте экспорт. В APK данные живут до удаления приложения.
 - Экспорт отдаёт `expenses-backup-ГГГГ-ММ-ДД.json`; импорт проверяет схему и заменяет данные.
 
 ## Дорожная карта
@@ -83,6 +152,10 @@ SHA-256: `ebf4aec59b0cc25edfd3ce39bf0ddb7156aa322993adc5d94021da74e4085d46`
 ```
 certutil -hashfile Moi-Rashody-1.1.apk SHA256
 ```
+
+## Лицензия
+
+[MIT](LICENSE) © 2026 Сергей Горелов
 
 ## Атрибуция
 

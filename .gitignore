@@ -1,3 +1,30 @@
-Moi-Rashody-*.apk
+# Зависимости
+node_modules/
+.pnpm-store/
+
+# Сборка веб-версии
+dist/
+dist-ssr/
+.vite/
+
+# Android / Gradle
+app/android/app/build/
+app/android/build/
+app/android/.gradle/
+app/android/capacitor-cordova-android-plugins/build/
+app/android/app/src/main/assets/public/
+app/android/local.properties
 *.apk
-!README.md
+*.aab
+
+# Ключи подписи — никогда не коммитить
+keystore.properties
+*.jks
+*.keystore
+app/android/keystore/
+
+# Прочее
+.src/
+*.local
+.DS_Store
+Thumbs.db
